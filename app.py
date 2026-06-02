@@ -1,11 +1,15 @@
 """
-Drug Card Creator — Local Web App
-Run with: python app.py
-Then open: http://localhost:5000
+Drug Card Creator — Web App
+Local:   python app.py  →  open http://localhost:5000
+Railway: deployed automatically via Procfile
 """
 
-import sys, os, io, base64, json, tempfile
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import sys, os, io, base64, json
+
+# ── Ensure make_cards.py is findable regardless of working directory ──────────
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+if APP_DIR not in sys.path:
+    sys.path.insert(0, APP_DIR)
 
 from flask import Flask, render_template, request, send_file, jsonify
 from reportlab.pdfgen import canvas
@@ -13,7 +17,13 @@ from reportlab.lib.pagesizes import landscape, letter
 from reportlab.lib.colors import HexColor
 import make_cards as mc
 
-app = Flask(__name__)
+# Explicit template/static paths so Flask finds them regardless of CWD
+app = Flask(
+    __name__,
+    template_folder=os.path.join(APP_DIR, 'templates'),
+    static_folder=os.path.join(APP_DIR, 'static'),
+)
+app.config['PROPAGATE_EXCEPTIONS'] = True
 
 # ── Helper: build drug dict from form data ───────────────────────────────────
 def form_to_drug(data):
@@ -190,9 +200,15 @@ def preview():
     return jsonify({"pdf_b64": pdf_b64})
 
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "ok"})
+
+
 if __name__ == "__main__":
-    print("\n╔══════════════════════════════════════╗")
-    print("║  Drug Card Creator — ready!          ║")
-    print("║  Open: http://localhost:5000         ║")
-    print("╚══════════════════════════════════════╝\n")
-    app.run(debug=False, port=5000)
+    port = int(os.environ.get("PORT", 5000))
+    print(f"\n╔══════════════════════════════════════╗")
+    print(f"║  Drug Card Creator — ready!          ║")
+    print(f"║  Open: http://localhost:{port}       ║")
+    print(f"╚══════════════════════════════════════╝\n")
+    app.run(host="0.0.0.0", port=port, debug=False)
