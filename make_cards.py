@@ -1012,218 +1012,218 @@ if __name__ == '__main__':
     c.save()
     print(f"Saved: {output_path}")
 
-# ── BATCH GENERATION ────────────────────────────────────────────────────────
-import openpyxl
+# ── BATCH GENERATION (only runs when executed directly, not when imported) ───
+if __name__ == '__main__':
+    import openpyxl
 
-FULL_DATA = {
-    "Acyclovir": {
-        "indications": ["Herpes Simplex (HSV)", "Herpes Zoster", "Varicella"],
-        "ae": ["Nausea", "Headache", "Nephrotoxicity (IV)", "Neurotoxicity (IV)"],
-        "bbw": "None",
-        "meal": "Can take with or without food; stay well hydrated",
-        "pearls": [
-            "Renal dose adjustment required",
-            "Maintain adequate hydration to prevent crystalluria",
-            "Valacyclovir is a prodrug — better oral bioavailability",
-            "For shingles: start within 72 hours of rash onset",
-        ],
-    },
-    "Adapalene": {
-        "indications": ["Acne Vulgaris"],
-        "ae": ["Dryness", "Erythema", "Scaling", "Burning/Stinging"],
-        "bbw": "None",
-        "meal": "Topical — not applicable",
-        "pearls": [
-            "Not photolabile (unlike tretinoin)",
-            "Takes 6+ weeks to see improvement",
-            "Acne flaring may occur and last 4-6 weeks after initiation",
-            "Apply thin layer at bedtime; avoid eyes, lips, mucous membranes",
-            "Use sunscreen daily",
-        ],
-    },
-    "Albuterol HFA": {
-        "indications": ["Bronchospasm", "Asthma", "Exercise-Induced Bronchospasm"],
-        "ae": ["Tachycardia", "Tremor", "Headache", "Hypokalemia", "Nervousness"],
-        "bbw": "None",
-        "meal": "Inhaled — not applicable",
-        "pearls": [
-            "Short-acting beta-2 agonist (SABA) — rescue inhaler",
-            "Shake well before each use",
-            "Use >2 days/week suggests uncontrolled asthma",
-            "Rinse mouth after use if using spacer",
-        ],
-    },
-    "Alclometasone Dipropionate": {
-        "indications": ["Corticosteroid-Responsive Dermatoses"],
-        "ae": ["Skin Atrophy", "Telangiectasia", "Striae", "Contact Dermatitis", "Hypopigmentation"],
-        "bbw": "None",
-        "meal": "Topical — not applicable",
-        "pearls": [
-            "Low potency (Group 6) — safe for face and skin folds",
-            "Do not use with occlusive dressings",
-            "Prolonged use can cause cutaneous and systemic side effects",
-            "Safer than systemic corticosteroids for localized use",
-        ],
-    },
-}
-
-def parse_drug_row(row, headers):
-    """Build a drug dict from a spreadsheet row, filling gaps from FULL_DATA."""
-    d = dict(zip(headers, row))
-    generic = d.get("Generic Name", "") or ""
-    full    = FULL_DATA.get(generic, {})
-
-    def split_list(val):
-        if not val or str(val).strip() in ("None", ""):
-            return []
-        return [x.strip() for x in str(val).replace(";", ",").split(",") if x.strip()]
-
-    def split_bullets(val):
-        if not val or str(val).strip() in ("None", ""):
-            return []
-        return [x.strip() for x in str(val).split(";") if x.strip()]
-
-    indications = split_list(d.get("Indications")) or full.get("indications", ["See prescribing information"])
-    ae          = split_list(d.get("Adverse Effects")) or full.get("ae", ["See prescribing information"])
-    bbw         = (d.get("BBW") or "").strip()
-    if not bbw or bbw == "None": bbw = full.get("bbw", "None")
-    meal        = (d.get("Meal & Time of Day Considerations") or d.get("Meal-Timing") or "").strip()
-    if not meal or meal == "None": meal = full.get("meal", "No specific timing required")
-    pearls_raw  = split_bullets(d.get("Drug Pearls")) or full.get("pearls", [])
-
-    tab_letter  = (d.get("Alphabet Determining Name") or generic or "???").upper()
-
-    return {
-        "generic":    generic,
-        "brand":      d.get("Brand Name") or "",
-        "tab_letter": tab_letter,
-        "drug_class": d.get("Drug Class") or "",
-        "indications": indications,
-        "ae":          ae,
-        "bbw":         bbw,
-        "meal":        meal,
-        "pearls":      pearls_raw,
+    FULL_DATA = {
+        "Acyclovir": {
+            "indications": ["Herpes Simplex (HSV)", "Herpes Zoster", "Varicella"],
+            "ae": ["Nausea", "Headache", "Nephrotoxicity (IV)", "Neurotoxicity (IV)"],
+            "bbw": "None",
+            "meal": "Can take with or without food; stay well hydrated",
+            "pearls": [
+                "Renal dose adjustment required",
+                "Maintain adequate hydration to prevent crystalluria",
+                "Valacyclovir is a prodrug — better oral bioavailability",
+                "For shingles: start within 72 hours of rash onset",
+            ],
+        },
+        "Adapalene": {
+            "indications": ["Acne Vulgaris"],
+            "ae": ["Dryness", "Erythema", "Scaling", "Burning/Stinging"],
+            "bbw": "None",
+            "meal": "Topical — not applicable",
+            "pearls": [
+                "Not photolabile (unlike tretinoin)",
+                "Takes 6+ weeks to see improvement",
+                "Acne flaring may occur and last 4-6 weeks after initiation",
+                "Apply thin layer at bedtime; avoid eyes, lips, mucous membranes",
+                "Use sunscreen daily",
+            ],
+        },
+        "Albuterol HFA": {
+            "indications": ["Bronchospasm", "Asthma", "Exercise-Induced Bronchospasm"],
+            "ae": ["Tachycardia", "Tremor", "Headache", "Hypokalemia", "Nervousness"],
+            "bbw": "None",
+            "meal": "Inhaled — not applicable",
+            "pearls": [
+                "Short-acting beta-2 agonist (SABA) — rescue inhaler",
+                "Shake well before each use",
+                "Use >2 days/week suggests uncontrolled asthma",
+                "Rinse mouth after use if using spacer",
+            ],
+        },
+        "Alclometasone Dipropionate": {
+            "indications": ["Corticosteroid-Responsive Dermatoses"],
+            "ae": ["Skin Atrophy", "Telangiectasia", "Striae", "Contact Dermatitis", "Hypopigmentation"],
+            "bbw": "None",
+            "meal": "Topical — not applicable",
+            "pearls": [
+                "Low potency (Group 6) — safe for face and skin folds",
+                "Do not use with occlusive dressings",
+                "Prolonged use can cause cutaneous and systemic side effects",
+                "Safer than systemic corticosteroids for localized use",
+            ],
+        },
     }
 
+    def parse_drug_row(row, headers):
+        """Build a drug dict from a spreadsheet row, filling gaps from FULL_DATA."""
+        d = dict(zip(headers, row))
+        generic = d.get("Generic Name", "") or ""
+        full    = FULL_DATA.get(generic, {})
 
-def generate_batch(xlsx_path, start_card, end_card, output_path, start_tab_pos=0):
-    """
-    start_card / end_card are 1-based indices into the full sorted drug list.
-    Drugs are sorted by Alphabet Determining Name (col C) before slicing.
-    """
-    wb = openpyxl.load_workbook(xlsx_path)
-    ws = wb.active
-    headers = [ws.cell(1, c).value for c in range(1, ws.max_column + 1)]
+        def split_list(val):
+            if not val or str(val).strip() in ("None", ""):
+                return []
+            return [x.strip() for x in str(val).replace(";", ",").split(",") if x.strip()]
 
-    # Load all drugs
-    all_rows = []
-    for row_idx in range(2, ws.max_row + 1):
-        row = [ws.cell(row_idx, c).value for c in range(1, ws.max_column + 1)]
-        if not row[0]:
-            continue
-        all_rows.append(row)
+        def split_bullets(val):
+            if not val or str(val).strip() in ("None", ""):
+                return []
+            return [x.strip() for x in str(val).split(";") if x.strip()]
 
-    # Sort by Alphabet Determining Name (col index 2), fallback to Generic Name
-    alpha_col = headers.index("Alphabet Determining Name") if "Alphabet Determining Name" in headers else 2
-    all_rows.sort(key=lambda r: (str(r[alpha_col] or r[0] or '')).upper())
+        indications = split_list(d.get("Indications")) or full.get("indications", ["See prescribing information"])
+        ae          = split_list(d.get("Adverse Effects")) or full.get("ae", ["See prescribing information"])
+        bbw         = (d.get("BBW") or "").strip()
+        if not bbw or bbw == "None": bbw = full.get("bbw", "None")
+        meal        = (d.get("Meal & Time of Day Considerations") or d.get("Meal-Timing") or "").strip()
+        if not meal or meal == "None": meal = full.get("meal", "No specific timing required")
+        pearls_raw  = split_bullets(d.get("Drug Pearls")) or full.get("pearls", [])
 
-    # Slice to requested card range (1-based)
-    batch_rows = all_rows[start_card - 1 : end_card]
-    drugs_batch = [parse_drug_row(row, headers) for row in batch_rows]
+        tab_letter  = (d.get("Alphabet Determining Name") or generic or "???").upper()
 
-    c = canvas.Canvas(output_path, pagesize=landscape(letter))
-    c.setTitle("Drug Reference Cards")
+        return {
+            "generic":    generic,
+            "brand":      d.get("Brand Name") or "",
+            "tab_letter": tab_letter,
+            "drug_class": d.get("Drug Class") or "",
+            "indications": indications,
+            "ae":          ae,
+            "bbw":         bbw,
+            "meal":        meal,
+            "pearls":      pearls_raw,
+        }
 
-    def banner(is_back=False):
-        c.setFillColor(HexColor('#888ea0'))
-        c.setFont("Helvetica", 7)
-        msg = ("BACK SIDES \u2014 Print on reverse of front page \u00b7 Align before laminating"
-               if is_back else
-               "DRUG REFERENCE CARDS \u2014 Print on cardstock \u00b7 Cut on dashed lines \u00b7 Laminate")
-        c.drawCentredString(PAGE_W / 2, PAGE_H - 0.22 * inch, msg)
 
-    # Build a flat sequence of slots: each item is
-    # ('front', drug, tab_pos) or ('back', drug, tab_pos, overflow_pearls)
-    slots = []
-    card_index = start_tab_pos
-    for drug in drugs_batch:
-        slots.append(('front', drug, card_index, None))
-        card_index += 1
+    def generate_batch(xlsx_path, start_card, end_card, output_path, start_tab_pos=0):
+        """
+        start_card / end_card are 1-based indices into the full sorted drug list.
+        Drugs are sorted by Alphabet Determining Name (col C) before slicing.
+        """
+        wb = openpyxl.load_workbook(xlsx_path)
+        ws = wb.active
+        headers = [ws.cell(1, c).value for c in range(1, ws.max_column + 1)]
 
-    # Expand: after each front that overflows, insert its back immediately after
-    # We don't know overflow until we draw, so we do a pre-draw pass first
-    expanded = []
-    for slot in slots:
-        _, drug, tab, _ = slot
-        # Quick pre-render to detect overflow
-        test_c = canvas.Canvas(io.BytesIO(), pagesize=landscape(letter))
-        result = draw_card(test_c, CARD1_X, CARD_Y, drug, tab_pos=tab)
-        overflow, meal_ov = result if isinstance(result, tuple) else (result, False)
-        expanded.append(('front', drug, tab, None, False))
-        if overflow or meal_ov:
-            expanded.append(('back', drug, tab, overflow, meal_ov))
+        # Load all drugs
+        all_rows = []
+        for row_idx in range(2, ws.max_row + 1):
+            row = [ws.cell(row_idx, c).value for c in range(1, ws.max_column + 1)]
+            if not row[0]:
+                continue
+            all_rows.append(row)
 
-    # Lay out slots sequentially, but never put two backs on the same page.
-    # If the next two slots are both backs, insert the earliest pending front between them.
-    i = 0
-    while i < len(expanded):
-        left  = expanded[i]
-        right = expanded[i + 1] if i + 1 < len(expanded) else None
+        # Sort by Alphabet Determining Name (col index 2), fallback to Generic Name
+        alpha_col = headers.index("Alphabet Determining Name") if "Alphabet Determining Name" in headers else 2
+        all_rows.sort(key=lambda r: (str(r[alpha_col] or r[0] or '')).upper())
 
-        left_is_back  = left[0] == 'back'
-        right_is_back = right[0] == 'back' if right else False
+        # Slice to requested card range (1-based)
+        batch_rows = all_rows[start_card - 1 : end_card]
+        drugs_batch = [parse_drug_row(row, headers) for row in batch_rows]
 
-        # If both slots are backs, find the next front and pull it in as right slot
-        if left_is_back and right_is_back:
-            # Find the next front after i+1
-            next_front_idx = None
-            for j in range(i + 2, len(expanded)):
-                if expanded[j][0] == 'front':
-                    next_front_idx = j
-                    break
-            if next_front_idx is not None:
-                # Swap: pull that front into i+1, push the current i+1 back one slot
-                front_slot = expanded.pop(next_front_idx)
-                expanded.insert(i + 1, front_slot)
-                right = expanded[i + 1]
-                right_is_back = False
+        c = canvas.Canvas(output_path, pagesize=landscape(letter))
+        c.setTitle("Drug Reference Cards")
 
-        page_has_back = left_is_back or right_is_back
-        banner(is_back=page_has_back)
+        def banner(is_back=False):
+            c.setFillColor(HexColor('#888ea0'))
+            c.setFont("Helvetica", 7)
+            msg = ("BACK SIDES \u2014 Print on reverse of front page \u00b7 Align before laminating"
+                   if is_back else
+                   "DRUG REFERENCE CARDS \u2014 Print on cardstock \u00b7 Cut on dashed lines \u00b7 Laminate")
+            c.drawCentredString(PAGE_W / 2, PAGE_H - 0.22 * inch, msg)
 
-        # Draw left slot
-        _, ldrug, ltab, loverflow, lmeal_ov = left
-        if left_is_back:
-            draw_cut_guides(c, CARD1_X, CARD_Y, tab_pos=ltab, has_tab=False)
-            draw_card_back(c, CARD1_X, CARD_Y, ldrug, tab_pos=ltab,
-                           overflow_pearls=loverflow, show_meal=lmeal_ov)
-        else:
-            draw_cut_guides(c, CARD1_X, CARD_Y, tab_pos=ltab)
-            draw_card(c, CARD1_X, CARD_Y, ldrug, tab_pos=ltab)
+        # Build a flat sequence of slots: each item is
+        # ('front', drug, tab_pos) or ('back', drug, tab_pos, overflow_pearls)
+        slots = []
+        card_index = start_tab_pos
+        for drug in drugs_batch:
+            slots.append(('front', drug, card_index, None))
+            card_index += 1
 
-        # Draw right slot
-        if right:
-            _, rdrug, rtab, roverflow, rmeal_ov = right
-            if right_is_back:
-                draw_cut_guides(c, CARD2_X, CARD_Y, tab_pos=rtab, has_tab=False)
-                draw_card_back(c, CARD2_X, CARD_Y, rdrug, tab_pos=rtab,
-                               overflow_pearls=roverflow, show_meal=rmeal_ov)
+        # Expand: after each front that overflows, insert its back immediately after
+        # We don't know overflow until we draw, so we do a pre-draw pass first
+        expanded = []
+        for slot in slots:
+            _, drug, tab, _ = slot
+            # Quick pre-render to detect overflow
+            test_c = canvas.Canvas(io.BytesIO(), pagesize=landscape(letter))
+            result = draw_card(test_c, CARD1_X, CARD_Y, drug, tab_pos=tab)
+            overflow, meal_ov = result if isinstance(result, tuple) else (result, False)
+            expanded.append(('front', drug, tab, None, False))
+            if overflow or meal_ov:
+                expanded.append(('back', drug, tab, overflow, meal_ov))
+
+        # Lay out slots sequentially, but never put two backs on the same page.
+        # If the next two slots are both backs, insert the earliest pending front between them.
+        i = 0
+        while i < len(expanded):
+            left  = expanded[i]
+            right = expanded[i + 1] if i + 1 < len(expanded) else None
+
+            left_is_back  = left[0] == 'back'
+            right_is_back = right[0] == 'back' if right else False
+
+            # If both slots are backs, find the next front and pull it in as right slot
+            if left_is_back and right_is_back:
+                # Find the next front after i+1
+                next_front_idx = None
+                for j in range(i + 2, len(expanded)):
+                    if expanded[j][0] == 'front':
+                        next_front_idx = j
+                        break
+                if next_front_idx is not None:
+                    # Swap: pull that front into i+1, push the current i+1 back one slot
+                    front_slot = expanded.pop(next_front_idx)
+                    expanded.insert(i + 1, front_slot)
+                    right = expanded[i + 1]
+                    right_is_back = False
+
+            page_has_back = left_is_back or right_is_back
+            banner(is_back=page_has_back)
+
+            # Draw left slot
+            _, ldrug, ltab, loverflow, lmeal_ov = left
+            if left_is_back:
+                draw_cut_guides(c, CARD1_X, CARD_Y, tab_pos=ltab, has_tab=False)
+                draw_card_back(c, CARD1_X, CARD_Y, ldrug, tab_pos=ltab,
+                               overflow_pearls=loverflow, show_meal=lmeal_ov)
             else:
-                draw_cut_guides(c, CARD2_X, CARD_Y, tab_pos=rtab)
-                draw_card(c, CARD2_X, CARD_Y, rdrug, tab_pos=rtab)
+                draw_cut_guides(c, CARD1_X, CARD_Y, tab_pos=ltab)
+                draw_card(c, CARD1_X, CARD_Y, ldrug, tab_pos=ltab)
 
-        c.showPage()
-        i += 2
+            # Draw right slot
+            if right:
+                _, rdrug, rtab, roverflow, rmeal_ov = right
+                if right_is_back:
+                    draw_cut_guides(c, CARD2_X, CARD_Y, tab_pos=rtab, has_tab=False)
+                    draw_card_back(c, CARD2_X, CARD_Y, rdrug, tab_pos=rtab,
+                                   overflow_pearls=roverflow, show_meal=rmeal_ov)
+                else:
+                    draw_cut_guides(c, CARD2_X, CARD_Y, tab_pos=rtab)
+                    draw_card(c, CARD2_X, CARD_Y, rdrug, tab_pos=rtab)
 
-    c.save()
-    backs = sum(1 for s in expanded if s[0] == 'back')
-    print(f"Saved cards {start_card}–{end_card} ({len(drugs_batch)} drugs, {backs} with back sides) to: {output_path}")
+            c.showPage()
+            i += 2
 
-if __name__ == '__main__':
-    generate_batch(
-        '/mnt/user-data/outputs/Claude_Drugs_1.xlsx',
-        start_card=131,
-        end_card=140,
-        output_path='/mnt/user-data/outputs/drug_cards_131_140.pdf',
-        start_tab_pos=130
-    )
+        c.save()
+        backs = sum(1 for s in expanded if s[0] == 'back')
+        print(f"Saved cards {start_card}–{end_card} ({len(drugs_batch)} drugs, {backs} with back sides) to: {output_path}")
+
+        generate_batch(
+            '/mnt/user-data/outputs/Claude_Drugs_1.xlsx',
+            start_card=131,
+            end_card=140,
+            output_path='/mnt/user-data/outputs/drug_cards_131_140.pdf',
+            start_tab_pos=130
+        )
